@@ -18,7 +18,7 @@ using namespace std;
 //     {1, 2, 0, 4, 0, 4, 0, 2, 1},
 //     {0, 0, 0, 0, 3, 0, 0, 0, 0},
 // };
-void print_problem();
+
 const int w = 5;
 const int h = 5;
 int problem[w][h] = {
@@ -44,7 +44,9 @@ struct pos
     }
     int operator==(int a)
     {
-        return problem[x][y] == a;
+        if (problem[x][y] == a)
+            return 1;
+        return 0;
     }
 };
 void mark_safe(vector<pos> &a)
@@ -108,46 +110,78 @@ vector<pos> check_region(int x, int y, int num = -1) // шукає всі поз
     return checked;
 }
 
+const pos NONE = {-1, -1};
 
+pos check_samereg(pos a, int num)
+{
+    vector<pos> nrb = nearby(a.x, a.y);
+    for (pos p : nrb)
+    {
+        if (problem[p.x][p.y] == num && !in_list(checked, p))
+        {
+            return p;
+        }
+    }
+    return NONE;
+}
 
-vector<pos> region; 
+int target;
 
 vector<pos> create_region(int x, int y, int num = -1)
 {
-    if(num = -1){
-        
+    if (num == -1)
+    {
+        num = problem[x][y];
     }
-    else{
-        region.clear();
+    else
+    {
+        target = num - 2;
+        checked.clear();
     }
-    region.push_back({x, y});
+    checked.push_back({x, y});
+    target--;
 
+    vector<pos> nrb = nearby(x, y);
+    for (pos p : nrb)
+    {
+        if (p == 0)
+        {
+            pos sr = check_samereg(p, num);
+            if (!(sr == NONE))
+            {
+                if (target > check_region(sr.x, sr.y, problem[sr.x][sr.y]).size())
+                {
+                    cout << "char";
+                    problem[p.x][p.y] = num;
+                    create_region(p.x, p.y);
+                }
+            }
+        }
+    }
+    return checked;
 }
 
 void task21()
 {
-    for (int n = 1; n < 10; n++)
+    int n = 1;
+    for (int i = 0; i < w; i++)
     {
-        for (int i = 0; i < w; i++)
+        for (int j = 0; j < w; j++)
         {
-            for (int j = 0; j < w; j++)
+            if (problem[i][j] == n && !safe[i][j])
             {
-                if (problem[i][j] == n && !safe[i][j])
+                vector<pos> s;
+                s = check_region(i, j, problem[i][j]);
+                if (s.size() == problem[i][j])
                 {
-                    vector<pos> s;
-                    s = check_region(i, j, problem[i][j]);
-                    if ((int)s.size() == problem[i][j])
-                    {
-                        cout << "SAFE " << problem[i][j] << endl;
-                        mark_safe(s);
-                    }
-                    else
-                    {
-                        cout << "UNSAFE " << problem[i][j] << endl;
-                        s = create_region(i, j, problem[i][j]);
-                        if ((int)s.size() == problem[i][j])
-                            mark_safe(s);
-                    }
+                    cout << "SAFE " << problem[i][j] << endl;
+                    mark_safe(s);
+                }
+                else
+                {
+                    cout << "UNSAFE " << problem[i][j] << endl;
+                    s = create_region(i, j);
+                    mark_safe(s);
                 }
             }
         }
