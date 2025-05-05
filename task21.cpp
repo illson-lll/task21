@@ -21,15 +21,20 @@ using namespace std;
 void print_problem();
 const int w = 5;
 const int h = 5;
+// int problem[w][h] = {
+//     // test
+//     {3, 0, 0, 5, 0},
+//     {0, 1, 0, 0, 2},
+//     {3, 4, 0, 2, 0},
+//     {4, 0, 0, 3, 0},
+//     {0, 4, 3, 0, 4},
+// };
 int problem[w][h] = {
-    // test
-    {3, 0, 0, 5, 0},
-    {0, 1, 0, 0, 2},
-    {3, 4, 0, 2, 0},
-    {4, 0, 0, 3, 0},
-    {0, 4, 3, 0, 4},
-};
-
+    {0, 0, 0, 0, 4},
+    {0, 0, 0, 0, 3},
+    {0, 3, 2, 0, 0},
+    {0, 0, 0, 0, 0},
+    {1, 0, 0, 0, 0}};
 int safe[w][h] = {}; // Допоміжний масив, зберігаються позиції які не потрібно переглядати.
 
 struct pos
@@ -46,7 +51,16 @@ struct pos
     {
         return problem[x][y] == a;
     }
+    void operator=(int a)
+    {
+        problem[x][y] = a;
+    }
+    friend ostream &operator<<(ostream &stream, const pos &p);
 };
+ostream &operator<<(ostream &stream, const pos &p)
+{
+    stream << "Pos: (" << p.x << ":" << p.y << "): " << problem[p.x][p.y] << endl;
+}
 void mark_safe(vector<pos> &a)
 {
     for (pos p : a)
@@ -108,20 +122,42 @@ vector<pos> check_region(int x, int y, int num = -1) // шукає всі поз
     return checked;
 }
 
-
-
-vector<pos> region; 
+vector<pos> region;
 
 vector<pos> create_region(int x, int y, int num = -1)
 {
-    if(num = -1){
-        
+    if (num == -1)
+    {
+        num = problem[x][y];
     }
-    else{
+    else
+    {
         region.clear();
     }
     region.push_back({x, y});
-
+    int f = 0;
+    vector<pos> nrb = nearby(x, y);
+    for (pos p : nrb)
+    {
+        if (p == num && !in_list(region, p))
+        {
+            f = 1;
+            create_region(p.x, p.y);
+        }
+    }
+    if (!f)
+    {
+        nrb = nearby(x, y);
+        for (pos p : nrb)
+        {
+            if (p == 0 && (region.size() + 1) <= num)
+            {
+                p = num;
+                create_region(p.x, p.y);
+            }
+        }
+    }
+    return region;
 }
 
 void task21()
@@ -136,7 +172,7 @@ void task21()
                 {
                     vector<pos> s;
                     s = check_region(i, j, problem[i][j]);
-                    if ((int)s.size() == problem[i][j])
+                    if (s.size() == problem[i][j])
                     {
                         cout << "SAFE " << problem[i][j] << endl;
                         mark_safe(s);
@@ -144,8 +180,8 @@ void task21()
                     else
                     {
                         cout << "UNSAFE " << problem[i][j] << endl;
-                        s = create_region(i, j, problem[i][j]);
-                        if ((int)s.size() == problem[i][j])
+                        s = create_region(i, j,problem[i][j]);
+                        if (s.size() == problem[i][j])
                             mark_safe(s);
                     }
                 }
@@ -195,8 +231,8 @@ int main()
     print_problem();
     cout << "Safe: " << endl;
     print_marked();
-    cout << "Check again: " << endl;
-    task21();
-    print_problem();
+    // cout << "Check again: " << endl;
+    // task21();
+    // print_problem();
     return 0;
 }
