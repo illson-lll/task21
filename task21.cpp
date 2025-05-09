@@ -36,31 +36,31 @@ using namespace std;
 //     {0, 0, 0, 0, 0}};
 
 
-const int w = 6;
-const int h = 6;
-int problem[w][h] = {
-    {0, 0, 0, 0, 5, 0},
-    {5, 0, 0, 0, 0, 1},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 6, 0, 0, 0},
-    {4, 0, 0, 0, 0, 0},
-    {0, 3, 0, 0, 2, 0},
-};
-
-// const int w = 11;
-// const int h = 11;
+// const int w = 6;
+// const int h = 6;
 // int problem[w][h] = {
-//     {5, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//     {0, 1, 0, 4, 0, 0, 0, 0, 21, 0},
-//     {0, 0, 0, 20, 20, 0, 0, 0, 0, 0},
-//     {0, 4, 20, 0, 0, 0, 0, 0, 0, 0},
-//     {0, 0, 20, 0, 0, 0, 0, 0, 0, 0},
-//     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//     {0, 0, 0, 0, 0, 0, 0, 22, 0, 0},
-//     {0, 0, 0, 0, 0, 0, 0, 22, 3, 0},
-//     {0, 0, 0, 0, 0, 22, 22, 0, 0, 0},
-//     {0, 21, 0, 0, 0, 0, 6, 0, 5, 0},
-//     {0, 0, 0, 0, 0, 0, 0, 0, 0, 7}};
+//     {0, 0, 0, 0, 5, 0},
+//     {5, 0, 0, 0, 0, 1},
+//     {0, 0, 0, 0, 0, 0},
+//     {0, 0, 6, 0, 0, 0},
+//     {4, 0, 0, 0, 0, 0},
+//     {0, 3, 0, 0, 2, 0},
+// };
+
+const int w = 11;
+const int h = 11;
+int problem[w][h] = {
+    {5, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 4, 0, 0, 0, 0, 21, 0},
+    {0, 0, 0, 20, 20, 0, 0, 0, 0, 0},
+    {0, 4, 20, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 20, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 22, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 22, 3, 0},
+    {0, 0, 0, 0, 0, 22, 22, 0, 0, 0},
+    {0, 21, 0, 0, 0, 0, 6, 0, 5, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 7}};
 
 int safe[w][h] = {}; // Допоміжний масив, зберігаються позиції які не потрібно переглядати.
 
@@ -87,11 +87,11 @@ struct pos
     {
         problem[x][y] = a;
     }
-    int operator>(pos a)
+    int operator>(const pos &a)
     {
         return problem[x][y] > problem[a.x][a.y];
     }
-    int operator<(pos a)
+    int operator<(const pos &a)
     {
         return problem[x][y] < problem[a.x][a.y];
     }
@@ -107,16 +107,16 @@ ostream &operator<<(ostream &stream, const pos &p)
     return stream;
 }
 
-void mark_safe(vector<pos> &a) // Помічає список заданих позицій безпечними
-{
+void mark_safe(vector<pos> &a) 
+{// Помічає список заданих позицій безпечними
     for (pos p : a)
     {
         safe[p.x][p.y] = 1;
     }
 }
 
-int available(int x, int y) // Перевіряє чи не вийшли координати за межі границь
-{
+int available(int x, int y) 
+{// Перевіряє чи не вийшли координати за межі границь
     if (x < w && x >= 0 && y < h && y >= 0)
     {
         return 1;
@@ -124,8 +124,8 @@ int available(int x, int y) // Перевіряє чи не вийшли коо�
     return 0;
 }
 
-vector<pos> nearby(int x, int y) // Повертає позиції сусідніх та доступних клітинок
-{
+vector<pos> nearby(int x, int y) 
+{//Повертає позиції сусідніх та доступних клітинок
     vector<pos> r;
     int dx[] = {1, -1, 0, 0};
     int dy[] = {0, 0, -1, 1};
@@ -141,17 +141,20 @@ vector<pos> nearby(int x, int y) // Повертає позиції сусідн
     return r;
 }
 
-int in_list(vector<pos> &a, const pos &p)
-{
-    if (find(a.begin(), a.end(), p) != a.end())
-        return 1;
+
+int contains(vector<pos> &v, const pos &p)
+{//Перевіряє наявність p в масиві
+    for(pos g : v){
+        if(g.x == p.x && g.y == p.y)
+            return 1;
+    }
     return 0;
 }
 
 vector<pos> checked; // Допоміжний масив, зберігає всі переглянуті позиції регіона.
 
-vector<pos> check_region(int x, int y, int num = -1) // шукає всі позиції регіона
-{
+vector<pos> check_region(int x, int y, int num = -1) 
+{//Шукає всі позиції регіона
     if (num == -1)
         num = problem[x][y];
     else
@@ -162,7 +165,7 @@ vector<pos> check_region(int x, int y, int num = -1) // шукає всі поз
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
-        if (problem[p.x][p.y] == num && !in_list(checked, p))
+        if (problem[p.x][p.y] == num && !contains(checked, p))
             check_region(p.x, p.y);
     }
     return checked;
@@ -170,8 +173,8 @@ vector<pos> check_region(int x, int y, int num = -1) // шукає всі поз
 
 vector<pos> region;
 
-int check_difference(int x, int y, int num) //Перевіряє різницю
-{
+int check_difference(int x, int y, int num) 
+{//Перевіряє різницю
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
@@ -180,7 +183,8 @@ int check_difference(int x, int y, int num) //Перевіряє різницю
     }
     return 1;
 }
-int check_safe(int x, int y, int num){ //Перевіряє чи не торкається з безпечними регіоном того ж числа
+int check_safe(int x, int y, int num)
+{ //Перевіряє чи не торкається з безпечними регіоном того ж числа
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
@@ -190,18 +194,19 @@ int check_safe(int x, int y, int num){ //Перевіряє чи не торка
     return 1;
 }
 
-int check_subreg(int x, int y, int num){
+int check_subreg(int x, int y, int num)
+{ //Перевіряє чи не торкається з іншим регіоном
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
-        if(p == num && !in_list(region,p))
+        if(p == num && !contains(region,p))
             return 1; 
     }
     return 0;
 }
 
-void check_valid(int x, int y, int num) //Перевіряє чи можна ставити число замість нуля
-{
+void check_valid(int x, int y, int num) 
+{ //Перевіряє чи можна ставити число замість нуля
     if (!check_difference(x, y, num) || !check_safe(x,y,num))
         return;
     problem[x][y] = num;
@@ -210,7 +215,6 @@ void check_valid(int x, int y, int num) //Перевіряє чи можна с�
         problem[x][y] = 0;
     }
 }
-
 
 vector<pos> create_region(int x, int y, int num = -1)
 {
@@ -222,17 +226,16 @@ vector<pos> create_region(int x, int y, int num = -1)
     {
         region = check_region(x, y, num);
     }
-    if (!in_list(region,{x, y}))
+    if (!contains(region,{x, y}))
         region.push_back({x, y});
     if ((int)region.size() >= num)
         return region;
     vector<pos> priority;
     
-    
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
-        if (p == num && !in_list(region, p))
+        if (p == num && !contains(region, p))
         {
 
             create_region(p.x, p.y);
@@ -250,7 +253,7 @@ vector<pos> create_region(int x, int y, int num = -1)
     sort(priority.begin(), priority.end());
     for (pos p : priority)
     {
-        if (p == -1 || p == -2)
+        if (p == -1 || p == -2 || p == -3)
         {
             p = 0;
         }
