@@ -190,6 +190,16 @@ int check_safe(int x, int y, int num){ //Перевіряє чи не торка
     return 1;
 }
 
+int check_subreg(int x, int y, int num){
+    vector<pos> nrb = nearby(x, y);
+    for (pos p : nrb)
+    {
+        if(p == num && !in_list(region,p))
+            return 1; 
+    }
+    return 0;
+}
+
 void check_valid(int x, int y, int num) //Перевіряє чи можна ставити число замість нуля
 {
     if (!check_difference(x, y, num) || !check_safe(x,y,num))
@@ -201,7 +211,6 @@ void check_valid(int x, int y, int num) //Перевіряє чи можна с�
     }
 }
 
-vector<pos> priority;
 
 vector<pos> create_region(int x, int y, int num = -1)
 {
@@ -217,7 +226,9 @@ vector<pos> create_region(int x, int y, int num = -1)
         region.push_back({x, y});
     if ((int)region.size() >= num)
         return region;
-    priority.clear();
+    vector<pos> priority;
+    
+    
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
@@ -226,7 +237,12 @@ vector<pos> create_region(int x, int y, int num = -1)
 
             create_region(p.x, p.y);
         }
-        else if (p == 0 || p == -1 || p == -2)
+        else if(p == 0){
+            if(check_subreg(x,y,num))
+                p = -3;
+            priority.push_back(p);
+        }
+        else if (p == -1 || p == -2)
         {
             priority.push_back(p);
         }
@@ -240,7 +256,7 @@ vector<pos> create_region(int x, int y, int num = -1)
         }
         check_valid(p.x, p.y, num);
         if (p == num)
-            create_region(p.x, p.y);
+            create_region(p.x, p.y);       
     }
     return region;
 }
