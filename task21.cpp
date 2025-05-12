@@ -1,33 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <set>
 #include <algorithm>
 #include <cstring>
 
 using namespace std;
-// const int w = 9;
-// const int h = 9;
 
-// int problem[w][h] = {
-//     {0, 5, 0, 0, 0, 0, 0, 1, 0},
-//     {0, 7, 0, 0, 0, 0, 0, 2, 0},
-//     {0, 0, 7, 0, 7, 0, 5, 0, 0},
-//     {0, 0, 0, 5, 0, 5, 0, 0, 0},
-//     {0, 7, 0, 0, 0, 0, 0, 3, 0},
-//     {0, 6, 0, 0, 3, 0, 0, 7, 0},
-//     {0, 0, 0, 5, 0, 5, 0, 0, 0},
-//     {1, 2, 0, 4, 0, 4, 0, 2, 1},
-//     {0, 0, 0, 0, 3, 0, 0, 0, 0},
-// };
-
-// const int w = 5;
-// const int h = 5;
-// int problem[w][h] = {
-//     {3, 0, 0, 5, 0},
-//     {0, 1, 0, 0, 2},
-//     {3, 4, 0, 2, 0},
-//     {4, 0, 0, 3, 0},
-//     {0, 4, 3, 0, 4},
-// };
 // int problem[w][h] = {
 //     {0, 0, 0, 0, 0},
 //     {0, 0, 0, 0, 0},
@@ -35,51 +14,51 @@ using namespace std;
 //     {0, 0, 0, 0, 0},
 //     {0, 0, 0, 0, 0}};
 
-
-// const int w = 6;
-// const int h = 6;
-// int problem[w][h] = {
-//     {0, 0, 0, 0, 5, 0},
-//     {5, 0, 0, 0, 0, 1},
-//     {0, 0, 0, 0, 0, 0},
-//     {0, 0, 6, 0, 0, 0},
-//     {4, 0, 0, 0, 0, 0},
-//     {0, 3, 0, 0, 2, 0},
-// };
-
-const int w = 11;
-const int h = 11;
+const int w = 6;
+const int h = 6;
 int problem[w][h] = {
-    {5, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 0, 4, 0, 0, 0, 0, 21, 0},
-    {0, 0, 0, 20, 20, 0, 0, 0, 0, 0},
-    {0, 4, 20, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 20, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 22, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 22, 3, 0},
-    {0, 0, 0, 0, 0, 22, 22, 0, 0, 0},
-    {0, 21, 0, 0, 0, 0, 6, 0, 5, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 7}};
+    {0, 0, 0, 0, 5, 0},
+    {5, 0, 0, 0, 0, 1},
+    {0, 0, 0, 0, 0, 0},
+    {0, 0, 6, 0, 0, 0},
+    {4, 0, 0, 0, 0, 0},
+    {0, 3, 0, 0, 2, 0},
+};
+
+// const int w = 11;
+// const int h = 11;
+// int problem[w][h] = {
+//     {5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//     {0, 1, 0, 4, 0, 0, 0, 0, 0, 21, 0},
+//     {0, 0, 0, 20, 20, 0, 0, 0, 0, 0, 0},
+//     {0, 4, 20, 0, 0, 0, 0, 0, 0, 0, 0},
+//     {0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0},
+//     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//     {0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0},
+//     {0, 0, 0, 0, 0, 0, 0, 0, 22, 3, 0},
+//     {0, 0, 0, 0, 0, 0, 22, 22, 0, 0, 0},
+//     {0, 21, 0, 0, 0, 0, 0, 6, 0, 5, 0},
+//     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7},
+// };
 
 int safe[w][h] = {}; // Допоміжний масив, зберігаються позиції які не потрібно переглядати.
 
-struct pos             
+struct pos
 {
     int x;
     int y;
-    int operator==(const pos &b)
+    int operator==(const pos &b) const
     {
         if (x == b.x && y == b.y)
             return 1;
         return 0;
     }
-    int operator==(int a)
+    int operator==(int a) const
     {
         return problem[x][y] == a;
     }
 
-    int operator!=(int a)
+    int operator!=(int a) const
     {
         return problem[x][y] != a;
     }
@@ -87,11 +66,11 @@ struct pos
     {
         problem[x][y] = a;
     }
-    int operator>(const pos &a)
+    int operator>(const pos &a) const
     {
         return problem[x][y] > problem[a.x][a.y];
     }
-    int operator<(const pos &a)
+    int operator<(const pos &a) const
     {
         return problem[x][y] < problem[a.x][a.y];
     }
@@ -106,17 +85,23 @@ ostream &operator<<(ostream &stream, const pos &p)
     stream << "Pos: (" << p.x << ":" << p.y << "): " << problem[p.x][p.y] << endl;
     return stream;
 }
-
-void mark_safe(vector<pos> &a) 
-{// Помічає список заданих позицій безпечними
+struct comppos
+{
+    bool operator()(const pos &a, const pos &b) const
+    {
+        return a > b;
+    }
+};
+void mark_safe(vector<pos> &a)
+{ // Помічає список заданих позицій безпечними
     for (pos p : a)
     {
         safe[p.x][p.y] = 1;
     }
 }
 
-int available(int x, int y) 
-{// Перевіряє чи не вийшли координати за межі границь
+int available(int x, int y)
+{ // Перевіряє чи не вийшли координати за межі границь
     if (x < w && x >= 0 && y < h && y >= 0)
     {
         return 1;
@@ -124,8 +109,8 @@ int available(int x, int y)
     return 0;
 }
 
-vector<pos> nearby(int x, int y) 
-{//Повертає позиції сусідніх та доступних клітинок
+vector<pos> nearby(int x, int y)
+{ // Повертає позиції сусідніх та доступних клітинок
     vector<pos> r;
     int dx[] = {1, -1, 0, 0};
     int dy[] = {0, 0, -1, 1};
@@ -141,11 +126,11 @@ vector<pos> nearby(int x, int y)
     return r;
 }
 
-
 int contains(vector<pos> &v, const pos &p)
-{//Перевіряє наявність p в масиві
-    for(pos g : v){
-        if(g.x == p.x && g.y == p.y)
+{ // Перевіряє наявність p в масиві
+    for (pos g : v)
+    {
+        if (g.x == p.x && g.y == p.y)
             return 1;
     }
     return 0;
@@ -153,8 +138,8 @@ int contains(vector<pos> &v, const pos &p)
 
 vector<pos> checked; // Допоміжний масив, зберігає всі переглянуті позиції регіона.
 
-vector<pos> check_region(int x, int y, int num = -1) 
-{//Шукає всі позиції регіона
+vector<pos> check_region(int x, int y, int num = -1)
+{ // Шукає всі позиції регіона
     if (num == -1)
         num = problem[x][y];
     else
@@ -172,9 +157,11 @@ vector<pos> check_region(int x, int y, int num = -1)
 }
 
 vector<pos> region;
+set<pair<int, int>> checked2;
+priority_queue<pos, vector<pos>, comppos> prior;
 
-int check_difference(int x, int y, int num) 
-{//Перевіряє різницю
+int check_difference(int x, int y, int num)
+{ // Перевіряє різницю
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
@@ -184,36 +171,42 @@ int check_difference(int x, int y, int num)
     return 1;
 }
 int check_safe(int x, int y, int num)
-{ //Перевіряє чи не торкається з безпечними регіоном того ж числа
+{ // Перевіряє чи не торкається з безпечними регіоном того ж числа
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
-        if(p == num && safe[p.x][p.y])
+        if (p == num && safe[p.x][p.y])
             return 0;
     }
     return 1;
 }
 
 int check_subreg(int x, int y, int num)
-{ //Перевіряє чи не торкається з іншим регіоном
+{ // Перевіряє чи не торкається з іншим регіоном
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
-        if(p == num && !contains(region,p))
-            return 1; 
+        if ((p == num && !contains(region, p)) || (p == -1 && !checked2.count({p.x, p.y})))
+            return 1;
     }
     return 0;
 }
 
-void check_valid(int x, int y, int num) 
-{ //Перевіряє чи можна ставити число замість нуля
-    if (!check_difference(x, y, num) || !check_safe(x,y,num))
-        return;
+int check_valid(int x, int y, int num)
+{ // Перевіряє чи можна ставити число замість нуля
+    if (!check_difference(x, y, num) || !check_safe(x, y, num))
+    {
+        cout << "No. " << num << " " << x << ":" << y << endl;
+        return 0;
+    }
     problem[x][y] = num;
     if ((int)check_region(x, y, num).size() > num)
     {
+        cout << "No. " << num << " " << x << ":" << y << endl;
         problem[x][y] = 0;
+        return 0;
     }
+    return 1;
 }
 
 vector<pos> create_region(int x, int y, int num = -1)
@@ -224,43 +217,63 @@ vector<pos> create_region(int x, int y, int num = -1)
     }
     else
     {
+        while (!prior.empty())
+            prior.pop();
+        checked2.clear();
         region = check_region(x, y, num);
     }
-    if (!contains(region,{x, y}))
-        region.push_back({x, y});
+    if (!contains(region, {x, y}))
+        region = check_region(x, y, num);
     if ((int)region.size() >= num)
         return region;
-    vector<pos> priority;
-    
+
     vector<pos> nrb = nearby(x, y);
     for (pos p : nrb)
     {
-        if (p == num && !contains(region, p))
+        if ((p == num && !contains(region, p)))
         {
-
-            create_region(p.x, p.y);
+            if (!checked2.count({p.x, p.y}))
+            {
+                checked2.insert({p.x, p.y});
+                prior.push(p);
+            }
         }
-        else if(p == 0){
-            if(check_subreg(x,y,num))
-                p = -3;
-            priority.push_back(p);
-        }
-        else if (p == -1 || p == -2)
+        else if (p == 0 || p == -1 || p == -2)
         {
-            priority.push_back(p);
+            if (!checked2.count({p.x, p.y}))
+            {
+                if (check_subreg(p.x, p.y, num))
+                    p = -3;
+                checked2.insert({p.x, p.y});
+                prior.push(p);
+            }
         }
     }
-    sort(priority.begin(), priority.end());
-    for (pos p : priority)
+    pos p;
+    int b = 0;
+    do
     {
+
+        if (!prior.empty())
+        {
+            p = prior.top();
+            prior.pop();
+        }
+        else
+            return region;
+
         if (p == -1 || p == -2 || p == -3)
         {
             p = 0;
         }
-        check_valid(p.x, p.y, num);
-        if (p == num)
-            create_region(p.x, p.y);       
-    }
+
+        if (check_valid(p.x, p.y, num))
+        {
+            create_region(p.x, p.y);
+            b = 1;
+        }
+    } while (b != 1);
+
     return region;
 }
 
@@ -274,41 +287,42 @@ void task21()
         problem[0][h - 1] = -2;
     if (!problem[w - 1][h - 1])
         problem[w - 1][h - 1] = -2;
-
-    for (int n = 1; n <= 22; n++)
+    int n = 0;
+    // for (int n = 1; n <= 22; n++)
+    // {
+    for (int i = 0; i < w; i++)
     {
-        for (int i = 0; i < w; i++)
+        for (int j = 0; j < w; j++)
         {
-            for (int j = 0; j < w; j++)
+            n = problem[i][j];
+            if (problem[i][j] == 1)
             {
-                if (problem[i][j] == 1)
+                safe[i][j] = 1;
+                vector<pos> nrb = nearby(i, j);
+                for (pos p : nrb)
                 {
-                    safe[i][j] = 1;
-                    vector<pos> nrb = nearby(i, j);
-                    for (pos p : nrb)
-                    {
-                        if (p == 0)
-                            p = -1;
-                    }
+                    if (p == 0)
+                        p = -1;
                 }
-                else if (problem[i][j] == n && !safe[i][j])
+            }
+            else if (!safe[i][j] && n != 0)
+            {
+                vector<pos> s;
+                s = check_region(i, j, problem[i][j]);
+                if ((int)s.size() == problem[i][j])
                 {
-                    vector<pos> s;
-                    s = check_region(i, j, problem[i][j]);
+                    mark_safe(s);
+                }
+                else
+                {
+                    s = create_region(i, j, problem[i][j]);
                     if ((int)s.size() == problem[i][j])
-                    {
                         mark_safe(s);
-                    }
-                    else
-                    {
-                        s = create_region(i, j, problem[i][j]);
-                        if ((int)s.size() == problem[i][j])
-                            mark_safe(s);
-                    }
                 }
             }
         }
     }
+    // }
 }
 
 void print_problem()
@@ -344,7 +358,6 @@ int main()
 {
     cout << "Problem: " << endl;
     print_problem();
-
     task21();
     cout << "Solve: " << endl;
     print_problem();
