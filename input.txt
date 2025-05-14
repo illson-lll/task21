@@ -1,0 +1,35 @@
+void setbase(int b[w][h]){
+    for (int i = 0; i < w; i++)
+    {
+        for(int j = 0; j<h; j++){
+            problem[i][j] = b[i][j];
+        }
+    }
+    
+}
+
+int check_block(int x, int y, int num)
+{
+    problem[x][y] = num;
+    vector<pos> nrb = nearby(x, y);
+    for (pos p : nrb)
+    {
+        if (p != num && problem[p.x][p.y] > 1 && !safe[p.x][p.y])
+        {
+            int base[w][h] = {};
+            memcpy(base, problem, w * h * sizeof(int));
+            vector<pos> t;
+            t = create_region(p.x, p.y, t, problem[p.x][p.y]);
+            int size = t.size();
+            setbase(base);
+            if (problem[p.x][p.y] != size)
+            {
+                problem[x][y] = 0;
+                cout << "SIZE " << size << p << endl;
+                return 0;
+            }
+        }
+    }
+
+    return 1;
+}
