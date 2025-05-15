@@ -100,8 +100,6 @@ void print_marked()
     }
 }
 
-
-
 struct pos
 {
     int x;
@@ -337,17 +335,11 @@ class reg
             safe[p.x][p.y] = 0;
         }
     }
-    void destroy()
+    vector<pos> destroy(pos p)
     {
-        for (pos p : conflict)
-        {
-            if (p != 0)
-            {
-                vector<pos> s;
-                s = check_region(p.x, p.y, s, problem[p.x][p.y]);
-                set_init(s);
-            }
-        }
+        vector<pos> s;
+        s = check_region(p.x, p.y, s, problem[p.x][p.y]);
+        set_init(s);
     }
     vector<pos> expand_region(int x, int y)
     {
@@ -429,15 +421,39 @@ public:
         vector<pos> t;
         region = check_region(x, y, t, num);
         expand_region(x, y);
+        vector<pos> heads;
         if ((int)region.size() != num)
         {
-            set_init(region);
-            destroy();
-            while (!prior.empty())
-                prior.pop();
-            checked2.clear();
-            region = check_region(x, y, t, num);
-            expand_region(x, y);
+            for (pos c : conflict)
+            {
+                if (c != 0)
+                {
+                    destroy(c);
+                    set_init(region);
+                    while (!prior.empty())
+                        prior.pop();
+                    checked2.clear();
+                    region = check_region(x, y, t, num);
+                    expand_region(x, y);
+                    if ((int)region.size() == num)
+                    {
+                        mark_safe(region);
+                        return region;
+                    }
+                }
+            }
+
+            // for (pos p : heads)
+            // {
+            //     cout << "-------------" << endl;
+            //     vector<pos> s = create_region(p.x, p.y, problem[p.x][p.y]);
+            //     cout << "CREATE SUB REGION: " << problem[p.x][p.y] << " " << s.size() << endl;
+            //     print_problem();
+            // }
+        }
+        if ((int)region.size() == num)
+        {
+            mark_safe(region);
         }
 
         return region;
@@ -493,18 +509,17 @@ void task21()
                     {
                         reg newreg;
                         s = newreg.create_region(i, j, problem[i][j]);
-                        cout<<"CREATE REGION: "<<n<<" "<<s.size()<<endl;
+                        cout << "CREATE REGION: " << n << " " << s.size() << endl;
                         print_problem();
-                        cout<<"-------------"<<endl;
-                        if ((int)s.size() == problem[i][j])
-                            mark_safe(s);
+                        cout << "-------------" << endl;
+                        // if ((int)s.size() == problem[i][j])
+                        //     mark_safe(s);
                     }
                 }
             }
         }
     }
 }
-
 
 int main()
 {
@@ -515,7 +530,8 @@ int main()
     print_problem();
     cout << "Safe: " << endl;
     print_marked();
-    cout<<"2"<<endl<<endl;
+    cout << "2" << endl
+         << endl;
     cout << "Problem: " << endl;
     print_problem();
     task21();
@@ -523,7 +539,9 @@ int main()
     print_problem();
     cout << "Safe: " << endl;
     print_marked();
-        cout<<"2"<<endl<<endl;
+
+    cout << "2" << endl
+         << endl;
     cout << "Problem: " << endl;
     print_problem();
     task21();
