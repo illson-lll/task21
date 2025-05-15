@@ -39,6 +39,14 @@ using namespace std;
 //     {4, 0, 0, 0, 0, 0},
 //     {0, 3, 0, 0, 2, 0},
 // };
+// int init[w][h] = {
+//     {0, 0, 0, 0, 5, 0},
+//     {5, 0, 0, 0, 0, 1},
+//     {0, 0, 0, 0, 0, 0},
+//     {0, 0, 6, 0, 0, 0},
+//     {4, 0, 0, 0, 0, 0},
+//     {0, 3, 0, 0, 2, 0},
+// };
 
 const int w = 11;
 const int h = 11;
@@ -232,8 +240,8 @@ class reg
     set<pair<int, int>> checked2;
     priority_queue<pos, vector<pos>, comppos> prior;
     vector<pos> conflict;
+    vector<pos> unwanted;
 
-    pos head;
     int check_difference(int x, int y, int num)
     { // Перевіряє різницю
         vector<pos> nrb = nearby(x, y);
@@ -335,7 +343,7 @@ class reg
             safe[p.x][p.y] = 0;
         }
     }
-    vector<pos> destroy(pos p)
+    void destroy(pos p)
     {
         vector<pos> s;
         s = check_region(p.x, p.y, s, problem[p.x][p.y]);
@@ -357,7 +365,12 @@ class reg
             {
                 if (!contains(conflict, p))
                 {
-                    conflict.push_back(p);
+                    if(prior.empty())
+                        conflict.insert(conflict.begin(),p);
+                    else
+                        conflict.push_back(p);
+                    if (!contains(unwanted, {p.x, p.y, 0}))
+                        unwanted.push_back({p.x, p.y, 0});
                 }
             }
             else if (p == num)
@@ -377,6 +390,10 @@ class reg
                         p = -1;
                     checked2.insert({p.x, p.y});
                     p.i = index++;
+                    if (contains(unwanted, {p.x, p.y, 0}))
+                    {
+                        p.i *= p.i;
+                    }
                     prior.push(p);
                 }
             }
@@ -414,7 +431,6 @@ class reg
 public:
     vector<pos> create_region(int x, int y, int num)
     {
-        head = {x, y, 0};
         while (!prior.empty())
             prior.pop();
         checked2.clear();
@@ -478,14 +494,14 @@ void task21()
     //             problem[i][j] = -1;
     //         else if ((j == h - 1 || j == 0) && problem[i][j] == 0)
     //             problem[i][j] = -1;
-    //     }
+    //     } 7+3x = 9x +1 ; 6 = 6x; x = 1;
     // }
-    for (int j = 0; j < w; j++)
-    {
-        for (int i = 0; i < w; i++)
-        {
 
-            for (int n = 1; n <= 22; n++)
+    for (int n = 1; n <= 22; n++)
+    {
+        for (int j = 0; j < w; j++)
+        {
+            for (int i = 0; i < w; i++)
             {
 
                 if (problem[i][j] == 1)
@@ -539,7 +555,24 @@ int main()
     print_problem();
     cout << "Safe: " << endl;
     print_marked();
-
+    cout << "2" << endl
+         << endl;
+    cout << "Problem: " << endl;
+    print_problem();
+    task21();
+    cout << "Solve: " << endl;
+    print_problem();
+    cout << "Safe: " << endl;
+    print_marked();
+    cout << "2" << endl
+         << endl;
+    cout << "Problem: " << endl;
+    print_problem();
+    task21();
+    cout << "Solve: " << endl;
+    print_problem();
+    cout << "Safe: " << endl;
+    print_marked();
     cout << "2" << endl
          << endl;
     cout << "Problem: " << endl;
