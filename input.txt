@@ -32,4 +32,3 @@ int check_block(int x, int y, int num)
     }
 
     return 1;
-}
